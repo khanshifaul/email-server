@@ -1,0 +1,350 @@
+# Email Server Git Ignore File
+
+# ================================
+# Configuration and Generated Files
+# ================================
+
+# Main configuration directory (generated during setup)
+/email-server-config/
+
+# DNS configuration files
+/dns/
+
+# SSL certificates and private keys (sensitive)
+*.key
+*.pem
+*.crt
+*.csr
+*.p12
+*.pfx
+
+# Let's Encrypt certificates
+/etc/letsencrypt/
+/ssl/
+
+# ================================
+# Docker and Container Data
+# ================================
+
+# Docker data volumes
+**/mailserver-data/data/
+**/mailserver-data/state/
+**/mailserver-data/logs/
+
+# Docker Compose override files
+docker-compose.override.yml
+docker-compose.*.yml
+
+# Docker build files
+Dockerfile
+.dockerignore
+
+# Container temporary files
+**/*.tmp
+**/*.temp
+
+# ================================
+# Backup Files
+# ================================
+
+# Backup directories
+**/backup/
+**/backups/
+**/*.backup
+**/*.bak
+
+# Archive files
+*.tar
+*.tar.gz
+*.tgz
+*.zip
+*.7z
+
+# ================================
+# User Data and Databases
+# ================================
+
+# User database (contains passwords)
+**/users.json
+
+# SQLite databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Database dumps
+*.dump
+*.sql
+
+# ================================
+# Log Files
+# ================================
+
+# System logs
+*.log
+**/*.log
+logs/
+**/logs/
+
+# Nginx logs
+/var/log/nginx/
+
+# Mail server logs
+/var/log/mail*
+
+# ================================
+# Temporary Files
+# ================================
+
+# OS temporary files
+*.tmp
+*.temp
+.tmp/
+temp/
+
+# Editor temporary files
+*~
+.*.swp
+.*.swo
+*.swo
+*.swp
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ================================
+# System Specific Files
+# ================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+# ================================
+# Certificate and Key Files
+# ================================
+
+# SSL/TLS certificates
+*.cer
+*.der
+*.p7b
+*.p7c
+
+# Private keys
+*.priv
+*.private
+
+# Certificate signing requests
+*.csr
+
+# ================================
+# Environment and Secret Files
+# ================================
+
+# Environment files with secrets
+.env
+.env.local
+.env.*.local
+
+# Secret configuration files
+secrets.yaml
+secrets.yml
+config.secret.json
+
+# ================================
+# Script Generated Files
+# ================================
+
+# Temporary script files
+**/*.tmp
+setup.tmp
+manage.tmp
+
+# Lock files
+*.lock
+
+# PID files
+*.pid
+
+# ================================
+# Backup and Swap Files
+# ================================
+
+# Backup files created by editors
+*~
+*.bak
+*.backup
+
+# Swap files for session recovery
+*.swp
+*.swo
+
+# ================================
+# Package and Build Files
+# ================================
+
+# Node.js (if any frontend components)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# ================================
+# IDE and Editor Files
+# ================================
+
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# IntelliJ
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Eclipse
+.settings/
+.project
+.classpath
+
+# NetBeans
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# ================================
+# OS Generated Files
+# ================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+# ================================
+# Custom Application Files
+# ================================
+
+# Application specific
+.cache/
+.installed.cfg
+
+# ================================
+# SSL Certificate Directories
+# ================================
+
+# Let's Encrypt live directory
+/etc/letsencrypt/live/
+/etc/letsencrypt/archive/
+/etc/letsencrypt/renewal/
+
+# Custom SSL directory
+/ssl/live/
+/ssl/archive/
+
+# ================================
+# Mail Server Specific
+# ================================
+
+# Mail data (contains actual emails)
+**/var/mail/
+**/mail-data/
+
+# SpamAssassin bayesian databases
+**/.spamassassin/
+
+# ClamAV virus definitions
+**/clamav/
+
+# Dovecot indices
+**/dovecot.index*
+**/dovecot.list.index*
+
+# Postfix queues
+**/postfix/**
+
+# ================================
+# Backup Script Outputs
+# ================================
+
+# Backup script outputs
+backup-*.tar.gz
+backup_*.tar.gz
+*backup*.zip
+
+# ================================
+# Temporary Script Files
+# ================================
+
+# Script temporary files
+**/*.tmp.json
+**/*.tmp.yml
+**/*.tmp.yaml
+
+# Configuration backups
+**/*.bak
+**/*.backup
+
+# ================================
+# Security Sensitive Files
+# ================================
+
+# Any file containing passwords or keys
+*password*
+*secret*
+*key*
+*credential*
+*auth*
+
+# ================================
+# Local Override Files
+# ================================
+
+# Local configuration overrides
+docker-compose.local.yml
+config.local.json
+settings.local.ini
+
+# Development configurations
+.devcontainer/
+.devconfig/
