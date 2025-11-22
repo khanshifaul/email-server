@@ -258,10 +258,12 @@ case "$1" in
         echo "This command will permanently remove:"
         echo "  • All Docker containers and volumes"
         echo "  • Configuration directory (${CONFIG_DIR})"
-        echo "  • SSL certificates (/etc/letsencrypt)"
         echo "  • Nginx server configurations"
         echo "  • DNS configuration files"
         echo "  • All email data and user accounts"
+        echo ""
+        echo "Note: SSL certificates will NOT be removed."
+        echo "      You can manually remove them later if needed."
         echo
         read -p "Are you sure you want to proceed? Type 'DELETE' to confirm: " confirmation
         
@@ -298,18 +300,6 @@ case "$1" in
             fi
         else
             log_info "Configuration directory not found, skipping..."
-        fi
-        
-        # Remove SSL certificates
-        log_info "Removing SSL certificates..."
-        if [ -d "/etc/letsencrypt" ]; then
-            if sudo rm -rf /etc/letsencrypt; then
-                log_success "SSL certificates removed"
-            else
-                log_error "Failed to remove SSL certificates"
-            fi
-        else
-            log_info "SSL certificates directory not found, skipping..."
         fi
         
         # Remove nginx server configurations
