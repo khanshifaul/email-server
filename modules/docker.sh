@@ -47,12 +47,9 @@ services:
 networks:
   mail-network:
     driver: bridge
-    ipam:
-      config:
-        - subnet: 172.18.0.0/16
 EOF
 
-    log_success "Docker Compose file created"
+    log_success "Docker Compose file created (Docker will auto-assign subnet)"
 }
 
 start_core_services() {
