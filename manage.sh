@@ -250,6 +250,137 @@ case "$1" in
             exit 1
         fi
         ;;
+    delete)
+        echo -e "${RED}================================================${NC}"
+        echo -e "${RED}  WARNING: This will DELETE everything!${NC}"
+        echo -e "${RED}================================================${NC}"
+        echo
+        echo "This command will permanently remove:"
+        echo "  • All Docker containers and volumes"
+        echo "  • Configuration directory (${CONFIG_DIR})"
+        echo "  • SSL certificates (/etc/letsencrypt)"
+        echo "  • Nginx server configurations"
+        echo "  • DNS configuration files"
+        echo "  • All email data and user accounts"
+        echo
+        read -p "Are you sure you want to proceed? Type 'DELETE' to confirm: " confirmation
+        
+        if [ "$confirmation" != "DELETE" ]; then
+            log_info "Delete operation cancelled"
+            exit 0
+        fi
+        
+        log_info "Starting complete cleanup process..."
+        
+        # Stop and remove containers and volumes
+        if check_docker_compose; then
+            log_info "Stopping and removing containers and volumes..."
+            if docker compose down -v; then
+                log_success "Containers and volumes removed"
+            else
+                log_error "Failed to remove containers and volumes"
+            fi
+        fi
+        
+        # Return to script directory for cleanup
+        cd "${SCRIPT_DIR}" || {
+            log_error "Cannot return to script directory: ${SCRIPT_DIR}"
+            exit 1
+        }
+        
+        # Remove configuration directory
+        if [ -d "${CONFIG_DIR}" ]; then
+            log_info "Removing configuration directory: ${CONFIG_DIR}"
+            if rm -rf "${CONFIG_DIR}"; then
+                log_success "Configuration directory removed"
+            else
+                log_error "Failed to remove configuration directory"
+            fi
+        else
+            log_info "Configuration directory not found, skipping..."
+        fi
+        
+        # Remove SSL certificates
+        log_info "Removing SSL certificates..."
+        if [ -d "/etc/letsencrypt" ]; then
+            if sudo rm -rf /etc/letsencrypt; then
+                log_success "SSL certificates removed"
+            else
+                log_error "Failed to remove SSL certificates"
+            fi
+        else
+            log_info "SSL certificates directory not found, skipping..."
+        fi
+        
+        # Remove nginx server configurations
+        log_info "Removing nginx configurations..."
+        nginx_config_found=false
+        
+        # Remove mail domain configs from sites-available and sites-enabled
+        if [ -n "$PRIMARY_DOMAIN" ]; then
+            for site_config in "/etc/nginx/sites-available/mail.$PRIMARY_DOMAIN" "/etc/nginx/sites-enabled/mail.$PRIMARY_DOMAIN"; do
+                if [ -f "$site_config" ]; then
+                    if sudo rm -f "$site_config"; then
+                        log_success "Removed: $site_config"
+                        nginx_config_found=true
+                    else
+                        log_error "Failed to remove: $site_config"
+                    fi
+                fi
+            done
+        fi
+        
+        # Remove autoconfig file
+        autoconfig_file="/var/www/html/.well-known/autoconfig/mail/config-v1.1.xml"
+        if [ -f "$autoconfig_file" ]; then
+            if sudo rm -f "$autoconfig_file"; then
+                log_success "Removed autoconfig file"
+                nginx_config_found=true
+            else
+                log_error "Failed to remove autoconfig file"
+            fi
+        fi
+        
+        if [ "$nginx_config_found" = false ]; then
+            log_info "No nginx configurations found for cleanup"
+        else
+            # Test and reload nginx if configs were removed
+            if sudo nginx -t >/dev/null 2>&1; then
+                sudo systemctl reload nginx 2>/dev/null && log_success "Nginx reloaded" || log_warning "Nginx reload failed"
+            fi
+        fi
+        
+        # Remove DNS configuration files
+        log_info "Removing DNS configuration files..."
+        dns_files_removed=false
+        
+        # Remove dns directory
+        if [ -d "${SCRIPT_DIR}/dns" ]; then
+            if rm -rf "${SCRIPT_DIR}/dns"; then
+                log_success "DNS directory removed"
+                dns_files_removed=true
+            else
+                log_error "Failed to remove DNS directory"
+            fi
+        fi
+        
+        # Remove generate-dkim script
+        if [ -f "${SCRIPT_DIR}/generate-dkim.sh" ]; then
+            if rm -f "${SCRIPT_DIR}/generate-dkim.sh"; then
+                log_success "generate-dkim.sh removed"
+                dns_files_removed=true
+            else
+                log_error "Failed to remove generate-dkim.sh"
+            fi
+        fi
+        
+        if [ "$dns_files_removed" = false ]; then
+            log_info "No DNS configuration files found for cleanup"
+        fi
+        
+        log_success "Complete cleanup finished! The email server has been fully removed."
+        log_info "Note: You may need to manually remove any remaining DNS records from your domain provider."
+        ;;
     status)
         echo "=== Docker Services Status ==="
         if check_docker_compose; then
@@ -473,6 +604,7 @@ EOF
         echo "  $0 start                    # Start all services"
         echo "  $0 stop                     # Stop all services"
         echo "  $0 restart                  # Restart all services"
+        echo "  $0 delete                   # COMPLETE CLEANUP (dangerous!)"
         echo "  $0 status                   # Show service status"
         echo "  $0 logs [service]           # Show service logs"
         echo "  $0 monitor                  # Monitor services in real-time"
@@ -492,6 +624,7 @@ EOF
         echo "  $0 status                          # Show status"
         echo "  $0 add-user admin@domain.com pass123  # Add user"
         echo "  $0 backup                         # Create backup"
+        echo "  $0 delete                         # WARNING: Complete cleanup"
         exit 1
         ;;
 esac

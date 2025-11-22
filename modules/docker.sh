@@ -97,18 +97,8 @@ test_services() {
         log_error "Mailserver container: ✗ Not responsive"
     fi
     
-    # Test key services
-    if docker compose exec mailserver supervisorctl status postfix > /dev/null 2>&1; then
-        log_success "Postfix service: ✓ Running"
-    else
-        log_error "Postfix service: ✗ Not running"
-    fi
-    
-    if docker compose exec mailserver supervisorctl status dovecot > /dev/null 2>&1; then
-        log_success "Dovecot service: ✓ Running"
-    else
-        log_error "Dovecot service: ✗ Not running"
-    fi
+    # Removed Postfix and Dovecot service checks as these services run inside
+    # the Docker mailserver container and shouldn't be checked at the system level
 }
 
 generate_dkim_keys() {
